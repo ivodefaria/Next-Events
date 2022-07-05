@@ -1,0 +1,27 @@
+import dbConnect from "../../../lib/dbConnect";
+import Event from "../../../models/Event";
+
+export default async function handler (req, res) {
+    const { method } = req
+    const { eventid } = req.query;
+
+    try {
+        await dbConnect()
+    }catch(error) {
+        res.status(500).json({ message: 'Connecting to the database failed!' });
+    }
+    
+    switch (method) {
+        case 'GET':
+            try {
+                const event = await Event.findOne({ "event_id": eventid });
+                res.status(200).json({ success: true, event: event })
+            } catch (error) {
+                res.status(400).json({ success: false })
+            }
+            break
+        default:
+            res.status(400).json({ success: false })
+            break
+    }
+}
